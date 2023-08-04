@@ -1,0 +1,20 @@
+{
+  "name": "library_api",
+  "version": "1.0.0",
+  "description": "manage a list of books",
+  "main": "server.js",
+  "scripts": {
+    "test": "set HOST=localhost&& set PORT=8000&& node server.js",
+    "dev": "set NODE_ENV=development&& nodemon server.js",
+    "prod": "set NODE_ENV=production&& nodemon server.js"
+  },
+  "author": "Milan Sayuraka",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^7.4.1"
+  }
+}
