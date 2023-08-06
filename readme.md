@@ -6,10 +6,11 @@
 
 - npm run prod
 
-<pre>
 ## File Structure:
 
-```
+<pre>
+
+
 node-js-api-file-structure/
 ├── config/
 │   ├── database.config.js            // Database configuration
@@ -29,5 +30,5 @@ node-js-api-file-structure/
 ├── package.json                // Project dependencies and configuration
 ├── .gitignore                  // Git ignore file
 └── README.md
-```
+
 </pre>

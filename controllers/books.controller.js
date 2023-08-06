@@ -19,7 +19,6 @@ exports.create = (req, res) => {
     // Save Book in the database
     book.save()
         .then(data => {
-            console.log(data);
             res.send(data);
         }).catch(err => {
             res.status(500).send({
@@ -30,36 +29,53 @@ exports.create = (req, res) => {
 
 // Retrieve and return all books from the database.
 exports.findAll = async (req, res) => {
-    Book.find()
-        .then(books => {
-            res.send(books);
-        }).catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while retrieving books."
-            });
+    const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
+    const limit = parseInt(req.query.limit) || 10; // Get the limit from the query parameter
+    const skip = (page - 1) * limit; // Calculate the number of documents to skip
+
+    try {
+        const totalBooks = await Book.countDocuments(); // Get the total number of books
+        const books = await Book.find()
+            .populate('author') // Populate author details
+            .skip(skip)
+            .limit(limit); // Query the database with skip and limit
+
+        res.send({
+            totalBooks,
+            currentPage: page,
+            totalPages: Math.ceil(totalBooks / limit),
+            books
         });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving books."
+        });
+    }
 };
 
 // Find a single book with a bookId
-exports.findOne = (req, res) => {
-    Book.findById(req.params.bookId)
-        .then(book => {
-            if (!book) {
-                return res.status(404).send({
-                    message: "Book not found with id " + req.params.bookId
-                });
-            }
-            res.send(book);
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "Book not found with id " + req.params.bookId
-                });
-            }
-            return res.status(500).send({
-                message: "Error retrieving book with id " + req.params.bookId
+exports.findOne = async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.bookId)
+            .populate('author');
+
+        if (!book) {
+            return res.status(404).send({
+                message: "Book not found with id " + req.params.bookId
             });
+        }
+        
+        res.send(book);
+    } catch (err) {
+        if (err.kind === 'ObjectId') {
+            return res.status(404).send({
+                message: "Book not found with id " + req.params.bookId
+            });
+        }
+        return res.status(500).send({
+            message: "Error retrieving book with id " + req.params.bookId
         });
+    }
 };
 
 // Update a book identified by the bookId in the request
